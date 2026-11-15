@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prendre rendez-vous – Laverie</title>
+<style>
+:root{--bg:#F1F7F9;--surface:#FFFFFF;--ink:#12303B;--muted:#5A727C;--line:#CFDDE3;--brand:#0E5A78;--brand-ink:#FFFFFF;--sun:#F5B700;--sun-ink:#3B2D00;--ok:#1C8A6B;--err:#B3261E;--tag:#FFF6D6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1A20;--surface:#13262E;--ink:#E6F1F4;--muted:#93AAB3;--line:#27414B;--brand:#4DB6D9;--brand-ink:#06232E;--sun:#F5B700;--sun-ink:#2B2000;--ok:#4FD1A5;--err:#FF8A80;--tag:#2A2610}}
+:root[data-theme="dark"]{--bg:#0C1A20;--surface:#13262E;--ink:#E6F1F4;--muted:#93AAB3;--line:#27414B;--brand:#4DB6D9;--brand-ink:#06232E;--sun:#F5B700;--sun-ink:#2B2000;--ok:#4FD1A5;--err:#FF8A80;--tag:#2A2610}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI","Helvetica Neue",Arial,sans-serif}
+main{max-width:640px;margin:0 auto;padding:0 16px 40px}
+header{padding:28px 0 8px}
+h1{margin:0;font-size:1.9rem;line-height:1.15;letter-spacing:-.02em;color:var(--brand)}
+header p{margin:6px 0 0;color:var(--muted)}
+section{margin-top:22px}
+h2{font-size:1.05rem;margin:0 0 10px;font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+label{display:block;font-size:.88rem;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px}
+textarea{min-height:70px;resize:vertical}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.line{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:end;padding:10px 0;border-top:1px dashed var(--line)}
+.line:first-child{border-top:0;padding-top:0}
+.line .sel{grid-column:1/2}.line .qty{grid-column:2/3}
+.line .meta{grid-column:1/3;display:flex;justify-content:space-between;gap:8px;font-size:.86rem;color:var(--muted)}
+.line label{margin:0 0 4px}
+.rm{background:none;border:0;color:var(--err);font:inherit;font-size:.86rem;cursor:pointer;padding:2px 0;min-height:32px}
+.btn2{margin-top:10px;background:none;border:1.5px solid var(--brand);color:var(--brand);border-radius:10px;font:inherit;font-weight:600;padding:10px 14px;min-height:46px;cursor:pointer;width:100%}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--bg);min-height:48px}
+.opt input{width:20px;height:20px;min-height:0;accent-color:var(--brand);flex:none}
+.opt:has(input:checked){border-color:var(--brand);background:var(--surface);box-shadow:inset 0 0 0 1px var(--brand)}
+.opt b{margin-left:auto;color:var(--muted);font-weight:600;font-size:.86rem;white-space:nowrap}
+.slots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
+.slot{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;font:inherit;padding:11px;min-height:46px;cursor:pointer}
+.slot[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:700}
+.slot:disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.hint{font-size:.86rem;color:var(--muted);margin:6px 0 0}
+.ticket{position:relative;margin-top:26px;background:var(--tag);border:1.5px solid var(--sun);border-radius:6px 6px 14px 14px;padding:26px 16px 16px}
+.ticket::before{content:"";position:absolute;top:9px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--bg);border:1.5px solid var(--sun)}
+.ticket h2{text-align:center;margin-bottom:8px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:.95rem}
+.row.total{border-top:1.5px dashed var(--sun);margin-top:8px;padding-top:10px;font-weight:800;font-size:1.25rem}
+.go{margin-top:14px;width:100%;background:var(--sun);color:var(--sun-ink);border:0;border-radius:12px;font:inherit;font-weight:800;font-size:1.05rem;padding:14px;min-height:54px;cursor:pointer}
+.go:active{transform:translateY(1px)}
+.err{color:var(--err);font-weight:600;margin:10px 0 0;min-height:1.2em}
+.done{margin-top:16px}
+.done textarea{min-height:150px;font-size:.9rem}
+.small{font-size:.8rem;color:var(--muted);text-align:center;margin-top:12px}
+[hidden]{display:none!important}
+.hours{font-size:.92rem;margin:4px 0 0;color:var(--ink);font-weight:600}
+.contact{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cbtn{flex:1 1 150px;text-align:center;text-decoration:none;background:var(--brand);color:var(--brand-ink);border-radius:10px;padding:12px;font-weight:700;min-height:46px}
+.cbtn.alt{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.ref{text-align:center;margin:0 0 8px;font-size:.86rem;color:var(--muted)}
+.ref b{color:var(--ink);letter-spacing:.04em}
+a.go{display:block;text-align:center;text-decoration:none}
+.go.wa{background:#25D366;color:#06260F}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1 id="nom">Keur Louise Laverie</h1>
+  <p>Demandez un rendez-vous en 2 minutes. Votre demande part sur WhatsApp.</p>
+  <p class="hours">Lundi au samedi : 8h–19h30. Dimanche : 14h–19h.</p>
+  <div class="contact">
+    <a class="cbtn" href="tel:+221789649950">Appeler le 78 964 99 50</a>
+    <a class="cbtn alt" href="https://wa.me/221789649950" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+  </div>
+</header>
+
+<section>
+  <h2>1. Votre linge</h2>
+  <div class="panel">
+    <div id="lines"></div>
+    <button class="btn2" type="button" id="add">Ajouter un autre article</button>
+  </div>
+</section>
+
+<section>
+  <h2>2. Dépôt et retour</h2>
+  <div class="panel">
+    <label style="margin-top:0">Comment nous remettez-vous le linge ?</label>
+    <div class="opts" id="dep"></div>
+    <label>Comment le récupérez-vous ?</label>
+    <div class="opts" id="liv"></div>
+    <div id="adrBox" hidden>
+      <label for="adr">Adresse (quartier, rue, repère)</label>
+      <textarea id="adr" autocomplete="street-address"></textarea>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>3. Quand ?</h2>
+  <div class="panel">
+    <label for="date" style="margin-top:0">Jour du rendez-vous</label>
+    <input type="date" id="date">
+    <p class="hint">Lundi au samedi : 8h–19h30. Dimanche : 14h–19h.</p>
+    <label>Créneau</label>
+    <div class="slots" id="slots"></div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Vos coordonnées</h2>
+  <div class="panel">
+    <label for="nom2" style="margin-top:0">Nom et prénom</label>
+    <input id="nom2" autocomplete="name">
+    <label for="tel">Téléphone</label>
+    <input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="77 123 45 67">
+  </div>
+</section>
+
+<div class="ticket" aria-live="polite">
+  <h2>Votre estimation</h2>
+  <p class="ref">Référence de votre demande : <b id="ref"></b></p>
+  <div id="recap"></div>
+  <div class="row total"><span>Total estimé</span><span id="total">0 FCFA</span></div>
+  <button class="go" type="button" id="send">Envoyer ma demande sur WhatsApp</button>
+  <p class="err" id="err" role="alert"></p>
+</div>
+
+<div class="done" id="done" hidden>
+  <p><b>Votre demande est prête.</b> Appuyez sur le bouton vert, puis sur Envoyer dans WhatsApp. Gardez votre référence : <b id="ref2"></b>.</p>
+  <a class="go wa" id="waLink" href="#" target="_blank" rel="noopener">Ouvrir WhatsApp avec mon message</a>
+  <p class="hint">WhatsApp ne s’ouvre pas ? Copiez le message et envoyez-le au 78 964 99 50.</p>
+  <textarea id="msg" readonly></textarea>
+  <button class="btn2" type="button" id="copy">Copier le message</button>
+  <button class="btn2" type="button" id="again">Faire une nouvelle demande</button>
+</div>
+<p class="small">Prix estimé : le montant final est confirmé à la pesée. La laverie confirme votre rendez-vous par WhatsApp.</p>
+</main>
+
+<script>
+/* ===== Réglages de la laverie (à modifier ici) ===== */
+const CONFIG = {
+  nom: "Keur Louise Laverie",
+  whatsapp: "221789649950",  // numéro avec l’indicatif, sans + ni espaces
+  prefixe: "KL",            // début de la référence unique de chaque demande
+  fraisCollecte: 1300,     // collecte du linge chez le client
+  fraisLivraison: 500,     // livraison du linge chez le client
+  creneaux: {
+    sem: ["8h–10h", "10h–12h", "12h–14h", "14h–16h", "16h–18h", "18h–19h30"],  // lundi au samedi
+    dim: ["14h–16h", "16h–19h"]                                              // dimanche
+  }
+};
+/* prix : p = prix normal, s = prix si moins de 10 kg (au kilo) */
+const SERVICES = [
+  {g:"Au kilo", id:"ls",  n:"Lavage simple (LS)", u:"kg", p:300, s:350, d:"Même jour si dépôt le matin"},
+  {g:"Au kilo", id:"lsp", n:"Lavé, séché, plié (LSP)", u:"kg", p:500, s:550, d:"48 h maximum"},
+  {g:"Au kilo", id:"lsr", n:"Lavé, séché, repassé (LSR)", u:"kg", p:700, s:750, d:"72 h maximum"},
+  {g:"À la pièce", id:"c2", n:"Couette 2 places", u:"pièce", p:3000, d:"3 jours"},
+  {g:"À la pièce", id:"c3", n:"Couette 3 places", u:"pièce", p:5000, d:"3 jours"},
+  {g:"À la pièce", id:"ta", n:"Tenue africaine", u:"pièce", p:2000, d:"3 jours"},
+  {g:"À la pièce", id:"tg", n:"Tenue africaine avec gomme", u:"pièce", p:2500, d:"3 jours"},
+  {g:"À la pièce", id:"vu", n:"Veste unique", u:"pièce", p:1000, d:"3 jours"},
+  {g:"À la pièce", id:"ev", n:"Ensemble veste", u:"pièce", p:2000, d:"3 jours"},
+  {g:"À la pièce", id:"r1", n:"Rideaux – 1 paire", u:"paire", p:700, d:"3 jours"},
+  {g:"À la pièce", id:"r2", n:"Rideaux – 2 à 3 paires (forfait)", u:"forfait", p:2000, d:"3 jours"},
+  {g:"À la pièce", id:"ng", n:"Nounours grand modèle", u:"pièce", p:1500, d:"3 jours"},
+  {g:"À la pièce", id:"np", n:"Nounours petit modèle", u:"pièce", p:1000, d:"3 jours"},
+  {g:"À la pièce", id:"or", n:"Oreiller", u:"pièce", p:1000, d:"3 jours"},
+  {g:"À la pièce", id:"pv", n:"Pull volumineux", u:"pièce", p:1500, d:"3 jours"},
+  {g:"À la pièce", id:"tp", n:"Tapis de prière", u:"pièce", p:null, d:"Prix sur devis"}
+];
+const DEP = [{id:"d0", t:"Je dépose le linge à la laverie", f:0}, {id:"d1", t:"Vous venez chercher le linge chez moi", f:"collecte"}];
+const LIV = [{id:"l0", t:"Je viens récupérer le linge", f:0}, {id:"l1", t:"Livraison chez moi", f:"livraison"}];
+
+const $ = s => document.querySelector(s);
+const fmt = n => new Intl.NumberFormat("fr-FR").format(n) + " FCFA";
+let lines = [], slot = "", dep = "d0", liv = "l0";
+const p2 = n => String(n).padStart(2, "0");
+const localISO = d => d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
+const ALPHA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+function newRef(){
+  const d = new Date(), a = new Uint8Array(4);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a); else a.forEach((_, i) => a[i] = Math.floor(Math.random() * 256));
+  return CONFIG.prefixe + "-" + String(d.getFullYear()).slice(2) + p2(d.getMonth() + 1) + p2(d.getDate()) + "-" + p2(d.getHours()) + p2(d.getMinutes()) + "-" + Array.from(a, x => ALPHA[x % ALPHA.length]).join("");
+}
+const REF = newRef();
+document.title = "Prendre rendez-vous – " + CONFIG.nom; $("#nom").textContent = CONFIG.nom;
+
+function unit(s, q){ return s.p == null ? null : (s.s && q > 0 && q < 10 ? s.s : s.p); }
+function lineTotal(l){ const s = SERVICES.find(x => x.id === l.id); const u = unit(s, l.q); return u == null ? null : u * l.q; }
+function fee(set, id){ const o = set.find(x => x.id === id); return o.f === "collecte" ? CONFIG.fraisCollecte : o.f === "livraison" ? CONFIG.fraisLivraison : 0; }
+
+function opts(el, set, name, cur){
+  el.innerHTML = set.map(o => `<label class="opt"><input type="radio" name="${name}" value="${o.id}" ${o.id === cur ? "checked" : ""}>${o.t}${o.f ? `<b>+ ${fmt(fee(set, o.id))}</b>` : ""}</label>`).join("");
+  el.onchange = e => { if (name === "dep") dep = e.target.value; else liv = e.target.value; render(); };
+}
+function drawLines(){
+  const groups = [...new Set(SERVICES.map(s => s.g))];
+  $("#lines").innerHTML = lines.map((l, i) => {
+    const s = SERVICES.find(x => x.id === l.id);
+    const options = groups.map(g => `<optgroup label="${g}">` + SERVICES.filter(x => x.g === g).map(x => `<option value="${x.id}" ${x.id === l.id ? "selected" : ""}>${x.n}</option>`).join("") + "</optgroup>").join("");
+    return `<div class="line" data-i="${i}">
+      <div class="sel"><label for="s${i}">Service</label><select id="s${i}">${options}</select></div>
+      <div class="qty"><label for="q${i}">${s.u === "kg" ? "Kilos" : "Quantité"}</label><input id="q${i}" type="number" inputmode="decimal" min="0" step="${s.u === "kg" ? "0.5" : "1"}" value="${l.q || ""}" placeholder="0"></div>
+      <div class="meta"><span>${s.d}</span><span id="lt${i}"></span></div>
+      ${lines.length > 1 ? `<button type="button" class="rm" data-rm="${i}">Retirer cet article</button>` : ""}
+    </div>`; }).join("");
+  lines.forEach((l, i) => {
+    $("#s" + i).onchange = e => { l.id = e.target.value; drawLines(); render(); };
+    $("#q" + i).oninput = e => { l.q = parseFloat(e.target.value.replace(",", ".")) || 0; render(); };
+  });
+  document.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { lines.splice(+b.dataset.rm, 1); drawLines(); render(); });
+}
+function drawSlots(){
+  const d = $("#date").value, today = new Date();
+  if (!d) { $("#slots").innerHTML = `<p class="hint">Choisissez d’abord un jour.</p>`; return; }
+  const isToday = d === localISO(today), list = new Date(d + "T12:00:00").getDay() === 0 ? CONFIG.creneaux.dim : CONFIG.creneaux.sem;
+  if (slot && !list.includes(slot)) slot = "";
+  $("#slots").innerHTML = list.map(c => {
+    const off = isToday && parseInt(c, 10) <= today.getHours();
+    return `<button type="button" class="slot" aria-pressed="${slot === c}" ${off ? "disabled" : ""} data-c="${c}">${c}</button>`; }).join("");
+  document.querySelectorAll(".slot").forEach(b => b.onclick = () => { slot = b.dataset.c; drawSlots(); });
+}
+function total(){
+  let t = 0, devis = false;
+  lines.forEach(l => { const v = lineTotal(l); if (l.q > 0) { if (v == null) devis = true; else t += v; } });
+  return {t: t + fee(DEP, dep) + fee(LIV, liv), devis};
+}
+function render(){
+  $("#adrBox").hidden = !(dep === "d1" || liv === "l1");
+  lines.forEach((l, i) => { const v = lineTotal(l); const el = $("#lt" + i); if (el) el.textContent = l.q > 0 ? (v == null ? "Sur devis" : fmt(v)) : ""; });
+  let h = "";
+  lines.forEach(l => { if (l.q > 0) { const s = SERVICES.find(x => x.id === l.id), v = lineTotal(l); h += `<div class="row"><span>${l.q} ${s.u === "kg" ? "kg" : "×"} ${s.n}</span><span>${v == null ? "Sur devis" : fmt(v)}</span></div>`; } });
+  if (fee(DEP, dep)) h += `<div class="row"><span>Collecte chez vous</span><span>${fmt(fee(DEP, dep))}</span></div>`;
+  if (fee(LIV, liv)) h += `<div class="row"><span>Livraison chez vous</span><span>${fmt(fee(LIV, liv))}</span></div>`;
+  $("#recap").innerHTML = h || `<p class="hint" style="text-align:center">Ajoutez votre linge pour voir le prix.</p>`;
+  const r = total(); $("#total").textContent = fmt(r.t) + (r.devis ? " + devis" : "");
+}
+function message(){
+  const lbl = (set, id) => set.find(x => x.id === id).t;
+  const d = new Date($("#date").value + "T12:00:00");
+  const jour = d.toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  const art = lines.filter(l => l.q > 0).map(l => { const s = SERVICES.find(x => x.id === l.id), v = lineTotal(l); return `- ${l.q} ${s.u === "kg" ? "kg" : "×"} ${s.n} (${v == null ? "sur devis" : fmt(v)})`; }).join("\n");
+  const adr = (dep === "d1" || liv === "l1") ? `\n*Adresse :* ${$("#adr").value.trim()}` : "";
+  const r = total();
+  return `Bonjour ${CONFIG.nom}, je souhaite prendre rendez-vous.\n*Référence :* ${REF}\n\n*Linge :*\n${art}\n\n*Dépôt :* ${lbl(DEP, dep)}\n*Retour :* ${lbl(LIV, liv)}${adr}\n*Jour :* ${jour}, ${slot}\n*Estimation :* ${fmt(r.t)}${r.devis ? " + devis" : ""}\n\n*Nom :* ${$("#nom2").value.trim()}\n*Téléphone :* ${$("#tel").value.trim()}`;
+}
+function check(){
+  if (!lines.some(l => l.q > 0)) return "Indiquez au moins un article avec sa quantité.";
+  if ((dep === "d1" || liv === "l1") && !$("#adr").value.trim()) return "Indiquez votre adresse pour la collecte ou la livraison.";
+  const v = $("#date").value; if (!v) return "Choisissez le jour du rendez-vous.";
+  if (v < localISO(new Date())) return "Choisissez une date à partir d’aujourd’hui.";
+  if (!slot) return "Choisissez un créneau.";
+  if (!$("#nom2").value.trim()) return "Indiquez votre nom.";
+  if ($("#tel").value.replace(/\D/g, "").length < 8) return "Indiquez un numéro de téléphone valide.";
+  return "";
+}
+$("#send").onclick = () => {
+  const e = check(); $("#err").textContent = e; if (e) return;
+  const m = message(), url = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(m);
+  $("#msg").value = m; $("#waLink").href = url; $("#ref2").textContent = REF; $("#done").hidden = false;
+  $("#done").scrollIntoView({block:"start"});
+  if (window.top === window.self) location.href = url;                 // page hébergée : WhatsApp s’ouvre directement
+  else { try { window.open(url, "_blank"); } catch (_) {} }           // page intégrée : le bouton vert prend le relais
+};
+$("#again").onclick = () => location.reload();
+$("#copy").onclick = async () => { try { await navigator.clipboard.writeText($("#msg").value); $("#copy").textContent = "Message copié"; } catch (_) { $("#msg").select(); } };
+$("#add").onclick = () => { lines.push({id:"lsp", q:0}); drawLines(); render(); };
+$("#date").onchange = () => { drawSlots(); $("#err").textContent = ""; };
+$("#date").min = localISO(new Date());
+opts($("#dep"), DEP, "dep", dep); opts($("#liv"), LIV, "liv", liv);
+lines = [{id:"lsp", q:0}]; drawLines(); drawSlots(); render(); $("#ref").textContent = REF;
+</script>
+</body>
+</html>
